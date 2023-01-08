@@ -15,16 +15,27 @@ struct ContentView: View {
         TabView {
             
             ClassifierView()
+                .edgesIgnoringSafeArea(.all)
                 .tabItem {
-                    Label("Local Images", image: "photo.circle")
-                }
+                    
+                    Image(systemName: "photo.circle")
+                    
+                    Text("Local Image")
+                    
+                } //: tabItem
             
             RemoteClassifierView()
+                .edgesIgnoringSafeArea(.all)
                 .tabItem {
-                    Label("Remote Image", image: "icloud.circle")
-                }
+                    
+                    Image(systemName: "icloud.circle")
+                    
+                    Text("Remote Image")                        
+                    
+                } //: tabItem
             
-        }
+        } //: TabView
+        .edgesIgnoringSafeArea(.all)
         
     } //:Body
     
@@ -32,7 +43,17 @@ struct ContentView: View {
 
 // MARK: - Preview
 struct ContentView_Previews: PreviewProvider {
+    
     static var previews: some View {
+        
+        // Light Theme
         ContentView()
+            .preferredColorScheme(.light)
+        
+        // Dark Theme
+        ContentView()
+            .preferredColorScheme(.dark)
+        
     }
+    
 }

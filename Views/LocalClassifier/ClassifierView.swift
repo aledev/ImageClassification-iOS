@@ -28,106 +28,27 @@ struct ClassifierView: View {
                     Image(viewModel.currentPhoto)
                         .resizable()
                         .frame(width: 200, height: 200)
+                        .cornerRadius(5)
+                        .shadow(color: .secondary, radius: 4.0)
                         .onTapGesture {
                             confirmClassifyPresented = true
-                            viewModel.hapticNotification()
+                            HapticFeedback.shared.notify()
                         }
                     
                 } //: VStack
                 
                 if viewModel.state == .done {
                     
-                    VStack(spacing: 5) {
- 
-                        HStack(spacing: 10) {
-                            
-                            Text("TYPE:")
-                                .bold()
-                                .font(.footnote)
-                                .foregroundColor(.primary)
-                                                        
-                            Text(viewModel.predictionLabel)
-                                .textCase(.uppercase)
-                                .bold()
-                                .font(.footnote)
-                                .font(.caption)
-                                .lineLimit(1)
-                                .truncationMode(.tail)
-                            
-                            Spacer()
-                            
-                            Image(systemName: "xmark.circle")
-                                .font(.title3)
-                                .foregroundColor(.secondary)
-                                .onTapGesture {
-                                    withAnimation(.easeOut(duration: 0.3)) {
-                                        viewModel.state = .none
-                                        viewModel.hapticNotification()
-                                    }
-                                }
-                            
-                        } //: HStack
-                        .padding(.horizontal, 10)
-                        .padding(.top, 5)
-                        
-                        Divider()
-                            .frame(height: 1)
-                            .background(.secondary)
-                        
-                        VStack {
-                            
-                            HStack {
-                                
-                                Text("Probabilities:")
-                                    .font(.footnote)
-                                    .bold()
-                                    .foregroundColor(.primary)
-                                
-                                Spacer()
-                                
-                            } //: HStack
-                            
-                            ForEach(viewModel.predictionProbs.sorted(by: >), id: \.key) { (key, value) in
-                                
-                                HStack {
-                                    
-                                    Text(key)
-                                        .font(.footnote)
-                                        .foregroundColor(.primary)
-                                        .lineLimit(1)
-                                        .truncationMode(.tail)
-                                    
-                                    Spacer()
-                                    
-                                    Text(String(format: "%.2f%@", value, "%"))
-                                        .font(.footnote)
-                                        .foregroundColor(.primary)
-                                    
-                                } //: HStack
-                                
-                            } //: ForEach
-                            
-                        } //: VStack
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 5)
-                        
-                    } //: VStack
-                    .background(
-                        RoundedRectangle(cornerRadius: 5)
-                            .foregroundColor(.accentColor)
-                            .opacity(0.3)
+                    ResultsView(
+                        result: viewModel.prediction,
+                        state: $viewModel.state
                     )
-                    .frame(maxWidth: 300)
-                    .offset(x: 0, y: -250)
-                    .padding()
                     
                 }
                 
                 if viewModel.state == .working {
                     
-                    ProgressView(label: {
-                        Text("Loading...")
-                    })
+                    LoadingView()
                     
                 }
                 
@@ -138,7 +59,7 @@ struct ClassifierView: View {
                 Button("Previous") {
                     withAnimation(.easeIn(duration: 0.3)) {
                         viewModel.previousTap()
-                        viewModel.hapticNotification()
+                        HapticFeedback.shared.notify()
                     }
                 } //: Button Previous
                 .padding()
@@ -147,7 +68,7 @@ struct ClassifierView: View {
                 Button("Next") {
                     withAnimation(.easeIn(duration: 0.3)) {
                         viewModel.nextTap()
-                        viewModel.hapticNotification()
+                        HapticFeedback.shared.notify()
                     }
                 } //: Button Next
                 .padding()
@@ -170,7 +91,7 @@ struct ClassifierView: View {
             Button(role: .none) {
                 withAnimation(.easeIn(duration: 0.3)) {
                     viewModel.performImageClassification()
-                    viewModel.hapticNotification()
+                    HapticFeedback.shared.notify()
                 }
             } label: {
                 Text("Classify")
@@ -188,7 +109,17 @@ struct ClassifierView: View {
 
 // MARK: - Preview
 struct ClassifierView_Previews: PreviewProvider {
+    
     static var previews: some View {
+    
+        // Light Theme
         ClassifierView()
+            .preferredColorScheme(.light)
+        
+        // Dark Theme
+        ClassifierView()
+            .preferredColorScheme(.dark)
+        
     }
+    
 }
